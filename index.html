@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistem Kegiatan Hari Minggu - Admin</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+        
+        * {
+            font-family: 'Poppins', sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        
+        .card-glass {
+            background: rgba(255, 255, 255, 0.25);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+        }
+        
+        .btn-primary {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        }
+        
+        .btn-secondary {
+            background: linear-gradient(45deg, #48bb78, #38a169);
+            transition: all 0.3s ease;
+        }
+        
+        .btn-secondary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.5s ease-in;
+        }
+        
+        .slide-in {
+            animation: slideIn 0.5s ease-out;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        @keyframes slideIn {
+            from { transform: translateX(-100px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.3s ease-in;
+        }
+        
+        .admin-table {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+        
+        .admin-table th {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 12px;
+            text-align: left;
+            color: white;
+            font-weight: 600;
+        }
+        
+        .admin-table td {
+            padding: 12px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            color: white;
+        }
+        
+        .admin-table tr:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+    </style>
+</head>
+<body class="min-h-screen flex items-center justify-center p-4">
+    <div class="max-w-6xl w-full mx-auto">
+        <!-- Header -->
+        <div class="text-center mb-8 fade-in">
+            <h1 class="text-4xl md:text-5xl font-bold text-white mb-4">
+                <i class="fas fa-calendar-check mr-3"></i>
+                Sistem Kegiatan Hari Minggu
+            </h1>
+            <p class="text-white/80 text-lg md:text-xl">
+                Formulir pengguna & panel admin terintegrasi
+            </p>
+        </div>
+
+        <!-- Navigation Tabs -->
+        <div class="flex mb-6 bg-white/10 rounded-xl p-1">
+            <button onclick="showTab('userTab')" class="flex-1 py-3 px-4 rounded-xl text-white font-semibold transition-all duration-300 tab-btn active">
+                <i class="fas fa-user mr-2"></i>Form Pengguna
+            </button>
+            <button onclick="showTab('adminTab')" class="flex-1 py-3 px-4 rounded-xl text-white font-semibold transition-all duration-300 tab-btn">
+                <i class="fas fa-lock mr-2"></i>Panel Admin
+            </button>
+        </div>
+
+        <!-- User Form Tab -->
+        <div id="userTab" class="tab-content active">
+            <div class="card-glass rounded-2xl p-6 md:p-8 mb-8 shadow-2xl fade-in">
+                <form id="activityForm" class="space-y-6">
+                    <div>
+                        <label class="block text-white font-medium mb-2 text-lg">
+                            <i class="fas fa-user mr-2"></i>
+                            Nama Lengkap
+                        </label>
+                        <input 
+                            type="text" 
+                            id="name" 
+                            required 
+                            placeholder="Masukkan nama lengkap kamu"
+                            class="w-full px-4 py-3 rounded-xl border-2 border-white/20 bg-white/10 text-white placeholder-white/60 focus:outline-none focus:border-white/40 focus:bg-white/20 transition-all duration-300"
+                        >
+                    </div>
+                    
+                    <div>
+                        <label class="block text-white font-medium mb-2 text-lg">
+                            <i class="fas fa-running mr-2"></i>
+                            Kegiatan Minggu Ini
+                        </label>
+                        <textarea 
+                            id="activity" 
+                            required 
+                            rows="4"
+                            placeholder="Ceritakan kegiatan seru apa yang akan kamu lakukan di hari Minggu..."
+                            class="w-full px-4 py-3 rounded-xl border-2 border-white/20 bg-white/10 text-white placeholder-white/60 focus:outline-none focus:border-white/40 focus:bg-white/20 transition-all duration-300 resize-none"
+                        ></textarea>
+                    </div>
+                    
+                    <button 
+                        type="submit" 
+                        class="btn-primary w-full py-3 rounded-xl text-white font-semibold text-lg flex items-center justify-center"
+                    >
+                        <i class="fas fa-paper-plane mr-2"></i>
+                        Kirim Kegiatan
+                    </button>
+                </form>
+            </div>
+
+            <!-- User Results -->
+            <div class="card-glass rounded-2xl p-6 md:p-8 shadow-2xl">
+                <div class="flex items-center justify-between mb-6">
+                    <h2 class="text-2xl font-bold text-white">
+                        <i class="fas fa-list mr-2"></i>
+                        Daftar Kegiatan Terbaru
+                    </h2>
+                    <span id="totalCount" class="bg-white/20 text-white px-3 py-1 rounded-full text-sm font-medium">
+                        0 kegiatan
+                    </span>
+                </div>
+                
+                <div id="userResultsList" class="space-y-3">
+                    <div class="text-center text-white/60 py-8">
+                        <i class="fas fa-inbox text-4xl mb-2"></i>
+                        <p>Belum ada kegiatan yang dikirim</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Admin Panel Tab -->
+        <div id="adminTab" class="tab-content">
+            <div class="card-glass rounded-2xl p-6 md:p-8 mb-6">
+                <h2 class="text-2xl font-bold text-white mb-6">
+                    <i class="fas fa-lock mr-2"></i>
+                    Login Admin
+                </h2>
+                
+                <div class="grid md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-white font-medium mb-2">
+                            Username Admin
+                        </label>
+                        <input 
+                            type="text" 
+                            id="adminUsername"
+                            placeholder="Masukkan username admin"
+                            class="w-full px-4 py-3 rounded-xl border-2 border-white/20 bg-white/10 text-white placeholder-white/60 focus:outline-none focus:border-white/40 focus:bg-white/20 transition-all duration-300"
+                        >
+                    </div>
+                    
+                    <div>
+                        <label class="block text-white font-medium mb-2">
+                            Password Admin
+                        </label>
+                        <input 
+                            type="password" 
+                            id="adminPassword"
+                            placeholder="Masukkan password admin"
+                            class="w-full px-4 py-3 rounded-xl border-2 border-white/20 bg-white/10 text-white placeholder-white/60 focus:outline-none focus:border-white/40 focus:bg-white/20 transition-all duration-300"
+                        >
+                    </div>
+                </div>
+                
+                <button 
+                    onclick="adminLogin()"
+                    class="btn-secondary w-full py-3 rounded-xl text-white font-semibold text-lg mt-6 flex items-center justify-center"
+                >
+                    <i class="fas fa-sign-in-alt mr-2"></i>
+                    Masuk sebagai Admin
+                </button>
+            </div>
+
+            <!-- Admin Dashboard (Hidden until login) -->
+            <div id="adminDashboard" class="card-glass rounded-2xl p-6 md:p-8 hidden">
+                <div class="flex items-center justify-between mb-6">
+                    <h2 class="text-2xl font-bold text-white">
+                        <i class="fas fa-chart-bar mr-2"></i>
+                        Dashboard Admin
+                    </h2>
+                    <div class="flex gap-2">
+                        <button onclick="exportToCSV()" class="btn-secondary px-4 py-2 rounded-xl text-white font-semibold text-sm">
+                            <i class="fas fa-download mr-1"></i> Export CSV
+                        </button>
+                        <button onclick="clearAllData()" class="bg-red-500 px-4 py-2 rounded-xl text-white font-semibold text-sm hover:bg-red-600 transition-colors">
+                            <i class="fas fa-trash mr-1"></i> Hapus Semua
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Statistics -->
+                <div class="grid md:grid-cols-3 gap-4 mb-6">
+                    <div class="bg-white/10 p-4 rounded-xl text-center">
+                        <div class="text-2xl font-bold text-white mb-1" id="totalActivities">0</div>
+                        <div class="text-white/80 text-sm">Total Kegiatan</div>
+                    </div>
+                    <div class="bg-white/10 p-4 rounded-xl text-center">
+                        <div class="text-2xl font-bold text-white mb-1" id="todayActivities">0</div>
+                        <div class="text-white/80 text-sm">Hari Ini</div>
+                    </div>
+                    <div class="bg-white/10 p-4 rounded-xl text-center">
+                        <div class="text-2xl font-bold text-white mb-1" id="uniqueUsers">0</div>
+                        <div class="text-white/80 text-sm">Pengguna Unik</div>
+                    </div>
+                </div>
+
+                <!-- Data Table -->
+                <div class="overflow-x-auto">
+                    <table class="admin-table w-full">
+                        <thead>
+                            <tr>
+                                <th>No</th>
+                                <th>Nama</th>
+                                <th>Kegiatan</th>
+                                <th>Waktu Submit</th>
+                                <th>Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody id="adminTableBody">
+                            <tr>
+                                <td colspan="5" class="text-center text-white/60 py-8">
+                                    Data akan muncul setelah login admin
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notifications -->
+    <div id="successToast" class="fixed top-4 right-4 bg-green-500 text-white px-6 py-3 rounded-xl shadow-lg transform translate-x-full transition-transform duration-300 z-50">
+        <div class="flex items-center">
+            <i class="fas fa-check-circle mr-2"></i>
+            <span id="toastMessage">Berhasil!</span>
+        </div>
+    </div>
+
+    <script>
+        // Konfigurasi Admin (bisa diganti dengan konfigurasi server)
+        const ADMIN_CONFIG = {
+            username: "admin",
+            password: "admin123",
+            isLoggedIn: false
+        };
+        
+        // Data storage
+        let activities = JSON.parse(localStorage.getItem('sundayActivities')) || [];
+        
+        // DOM Elements
+        const form = document.getElementById('activityForm');
+        const userResultsList = document.getElementById('userResultsList');
+        const totalCount = document.getElementById('totalCount');
+        const successToast = document.getElementById('successToast');
+        const toastMessage = document.getElementById('toastMessage');
+        
+        // Format waktu
+        function formatDateTime(timestamp) {
+            const date = new Date(timestamp);
+            return date.toLocaleString('id-ID', {
+                day: '2-digit',
+                month: '2-digit',
+                year: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit',
+                hour12: false
+            });
+        }
+        
+        function formatTime(timestamp) {
+            const date = new Date(timestamp);
+            return date.toLocaleTimeString('id-ID', {
+                hour: '2-digit',
+                minute: '2-digit',
+                hour12: false
+            });
+        }
+        
+        // Tab navigation
+        function showTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            document.getElementById(tabId).classList.add('active');
+            event.target.classList.add('active');
+        }
+        
+        // Toast notification
+        function showToast(message, type = 'success') {
+            toastMessage.textContent = message;
+            successToast.className = `fixed top-4 right-4 px-6 py-3 rounded-xl shadow-lg transform translate-x-full transition-transform duration-300 z-50 ${
+                type === 'success' ? 'bg-green-500' : 'bg-red-500'
+            } text-white`;
+            
+            successToast.classList.remove('translate-x-full');
+            setTimeout(() => {
+                successToast.classList.add('translate-x-full');
+            }, 3000);
+        }
+        
+        // Render kegiatan untuk user
+        function renderUserActivities() {
+            // Ambil 5 terbaru untuk user view
+            const recentActivities = [...activities]
+                .sort((a, b) => b.timestamp - a.timestamp)
+                .slice(0, 5);
+            
+            if (recentActivities.length === 0) {
+                userResultsList.innerHTML = `
+                    <div class="text-center text-white/60 py-8">
+                        <i class="fas fa-inbox text-4xl mb-2"></i>
+                        <p>Belum ada kegiatan yang dikirim</p>
+                    </div>
+                `;
+            } else {
+                userResultsList.innerHTML = recentActivities.map((activity, index) => `
+                    <div class="slide-in p-4 rounded-xl bg-white/10 border border-white/20">
+                        <div class="flex items-start justify-between">
+                            <div class="flex-1">
+                                <div class="flex items-center mb-2">
+                                    <span class="text-white font-semibold text-lg">${activity.name}</span>
+                                    <span class="ml-3 px-2 py-1 bg-white/20 text-white/80 text-xs rounded-full">
+                                        ${formatTime(activity.timestamp)}
+                                    </span>
+                                </div>
+                                <p class="text-white/90">${activity.activity}</p>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+            }
+            
+            totalCount.textContent = `${activities.length} kegiatan total`;
+        }
+        
+        // Admin login
+        function adminLogin() {
+            const username = document.getElementById('adminUsername').value;
+            const password = document.getElementById('adminPassword').value;
+            
+            if (username === ADMIN_CONFIG.username && password === ADMIN_CONFIG.password) {
+                ADMIN_CONFIG.isLoggedIn = true;
+                document.getElementById('adminDashboard').classList.remove('hidden');
+                showToast('Login admin berhasil!');
+                updateAdminDashboard();
+            } else {
+                showToast('Username atau password salah!', 'error');
+            }
+        }
+        
+        // Update admin dashboard
+        function updateAdminDashboard() {
+            if (!ADMIN_CONFIG.isLoggedIn) return;
+            
+            // Update statistics
+            document.getElementById('totalActivities').textContent = activities.length;
+            
+            const today = new Date().toDateString();
+            const todayCount = activities.filter(activity => 
+                new Date(activity.timestamp).toDateString() === today
+            ).length;
+            document.getElementById('todayActivities').textContent = todayCount;
+            
+            const uniqueUsers = new Set(activities.map(activity => activity.name)).size;
+            document.getElementById('uniqueUsers').textContent = uniqueUsers;
+            
+            // Update table
+            const tableBody = document.getElementById('adminTableBody');
+            if (activities.length === 0) {
+                tableBody.innerHTML = `
+                    <tr>
+                        <td colspan="5" class="text-center text-white/60 py-8">
+                            Tidak ada data kegiatan
+                        </td>
+                    </tr>
+                `;
+            } else {
+                tableBody.innerHTML = activities
+                    .sort((a, b) => a.timestamp - b.timestamp)
+                    .map((activity, index) => `
+                    <tr class="slide-in">
+                        <td>${index + 1}</td>
+                        <td class="font-semibold">${activity.name}</td>
+                        <td>${activity.activity}</td>
+                        <td>${formatDateTime(activity.timestamp)}</td>
+                        <td>
+                            <button onclick="deleteActivity(${activity.timestamp})" class="text-red-300 hover:text-red-100 transition-colors">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </td>
+                    </tr>
+                `).join('');
+            }
+        }
+        
+        // Hapus kegiatan
+        function deleteActivity(timestamp) {
+            if (confirm('Hapus kegiatan ini?')) {
+                activities = activities.filter(activity => activity.timestamp !== timestamp);
+                localStorage.setItem('sundayActivities', JSON.stringify(activities));
+                renderUserActivities();
+                if (ADMIN_CONFIG.isLoggedIn) {
+                    updateAdminDashboard();
+                }
+                showToast('Kegiatan berhasil dihapus!');
+            }
+        }
+        
+        // Hapus semua data
+        function clearAllData() {
+            if (confirm('Hapus SEMUA data kegiatan? Tindakan ini tidak dapat dibatalkan!')) {
+                activities = [];
+                localStorage.removeItem('sundayActivities');
+                renderUserActivities();
+                updateAdminDashboard();
+                showToast('Semua data berhasil dihapus!');
+            }
+        }
+        
+        // Export to CSV
+        function exportToCSV() {
+            if (activities.length === 0) {
+                showToast('Tidak ada data untuk diexport!', 'error');
+                return;
+            }
+            
+            let csvContent = "Nama,Kegiatan,Waktu Submit\n";
+            
+            activities.forEach(activity => {
+                csvContent += `"${activity.name}","${activity.activity}","${formatDateTime(activity.timestamp)}"\n`;
+            });
+            
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            const url = URL.createObjectURL(blob);
+            
+            link.setAttribute('href', url);
+            link.setAttribute('download', `kegiatan-minggu-${new Date().toISOString().split('T')[0]}.csv`);
+            link.style.visibility = 'hidden';
+            
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            
+            showToast('Data berhasil diexport ke CSV!');
+        }
+        
+        // Handle form submission
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const nameInput = document.getElementById('name');
+            const activityInput = document.getElementById('activity');
+            
+            const newActivity = {
+                name: nameInput.value.trim(),
+                activity: activityInput.value.trim(),
+                timestamp: Date.now()
+            };
+            
+            // Validasi
+            if (!newActivity.name || !newActivity.activity) {
+                showToast('Harap isi semua field!', 'error');
+                return;
+            }
+            
+            // Tambahkan ke array
+            activities.push(newActivity);
+            
+            // Simpan ke localStorage (simulasi server)
+            localStorage.setItem('sundayActivities', JSON.stringify(activities));
+            
+            // Reset form
+            form.reset();
+            
+            // Update UI
+            renderUserActivities();
+            if (ADMIN_CONFIG.isLoggedIn) {
+                updateAdminDashboard();
+            }
+            
+            showToast('Kegiatan berhasil dikirim!');
+        });
+        
+        // Inisialisasi
+        renderUserActivities();
+    </script>
+</body>
+</html>
